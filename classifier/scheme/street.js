@@ -57,7 +57,7 @@ module.exports = [
       },
       {
         is: ['StreetSuffixClassification'],
-        not: ['StreetClassification', 'IntersectionClassification']
+        not: ['StreetClassification', 'IntersectionClassification', 'RoadTypeClassification']
       }
     ]
   },
@@ -284,7 +284,7 @@ module.exports = [
       },
       {
         is: ['NumericClassification'],
-        not: ['PostcodeClassification']
+        not: []
       }
     ]
   },
@@ -315,6 +315,21 @@ module.exports = [
       {
         is: ['DirectionalClassification'],
         not: ['StreetClassification', 'IntersectionClassification', 'EndTokenSingleCharacterClassification']
+      }
+    ]
+  },
+  {
+    // West Main Street
+    confidence: 0.88,
+    Class: StreetClassification,
+    scheme: [
+      {
+        is: ['DirectionalClassification'],
+        not: ['StreetClassification', 'IntersectionClassification', 'EndTokenSingleCharacterClassification']
+      },
+      {
+        is: ['StreetClassification'],
+        not: ['DirectionalClassification']
       }
     ]
   }

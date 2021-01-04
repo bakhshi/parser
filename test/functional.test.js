@@ -52,7 +52,7 @@ const testcase = (test, common) => {
   // do not classify tokens preceeded by a 'place' as
   // an admin classification
   assert('Portland Cafe Portland OR', [
-    { place: 'Portland Cafe' },
+    { venue: 'Portland Cafe' },
     { locality: 'Portland' }, { region: 'OR' }
   ])
 
@@ -78,10 +78,19 @@ const testcase = (test, common) => {
   assert('1 California USA', [], false)
   assert('1 90210', [], false)
 
+  // unit type specified with no accompanying unit number, unit type should
+  // be removed by the OrphanedUnitTypeDeclassifier.
+  assert('Apartment', [], false)
+  assert('Unit', [], false)
+  assert('Space', [], false)
+
   // do not parse 'aus' as a locality if it follows a region
   assert('new south wales aus', [
     { region: 'new south wales' }, { country: 'aus' }
   ])
+
+  // test that we don't interpret "ga" as a street suffix
+  assert('jasper ga', [{ locality: 'jasper' }, { region: 'ga' }])
 }
 
 module.exports.all = (tape, common) => {

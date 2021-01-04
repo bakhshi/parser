@@ -3,3 +3,10 @@ paku
 
 # Rushendon Furlong, Pitstone, England
 furlong
+
+# bad abbreviation for the very uncommon suffix "Artery"
+!art
+
+# 1384 Cambridge beltway, Cambridge, MD 21613, USA
+beltway
+
