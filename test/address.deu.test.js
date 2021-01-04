@@ -6,13 +6,18 @@ const testcase = (test, common) => {
     { postcode: '10437' }, { locality: 'Berlin' }
   ])
 
+  assert('Am Nordkanal 11, 47877 Willich', [
+    { street: 'Am Nordkanal' }, { housenumber: '11' },
+    { postcode: '47877' }, { locality: 'Willich' }
+  ])
+
   assert('Am Bürgerpark 15-18, 13156, Berlin', [
     { street: 'Am Bürgerpark' }, { housenumber: '15-18' },
     { postcode: '13156' }, { locality: 'Berlin' }
   ])
 
   assert('Kaschk Bar, Linienstraße 40 10119 Berlin', [
-    { place: 'Kaschk Bar' },
+    { venue: 'Kaschk Bar' },
     { street: 'Linienstraße' }, { housenumber: '40' },
     { postcode: '10119' }, { locality: 'Berlin' }
   ])
@@ -21,6 +26,20 @@ const testcase = (test, common) => {
     { street: 'Genter Straße' }, { housenumber: '16a' },
     { locality: 'Munich' }, { country: 'Germany' }
   ])
+
+  assert('Esplanade 17, Berlin', [
+    { street: 'Esplanade' }, { housenumber: '17' },
+    { locality: 'Berlin' }
+  ])
+
+  assert('Königsallee Düsseldorf', [
+    { street: 'Königsallee' },
+    { locality: 'Düsseldorf' }
+  ])
+
+  assert('Rathausplatz', [{ street: 'Rathausplatz' }])
+  assert('Plutoweg', [{ street: 'Plutoweg' }])
+  assert('Dorfstrasse', [{ street: 'Dorfstrasse' }])
 
   // autocomplete-style query includes partial postcode
   assert('Eberswalder Straße 100 104', [

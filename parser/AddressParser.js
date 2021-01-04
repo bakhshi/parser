@@ -2,6 +2,9 @@ const Parser = require('./Parser')
 const AlphaNumericClassifier = require('../classifier/AlphaNumericClassifier')
 const TokenPositionClassifier = require('../classifier/TokenPositionClassifier')
 const HouseNumberClassifier = require('../classifier/HouseNumberClassifier')
+const UnitClassifier = require('../classifier/UnitClassifier')
+const UnitTypeClassifier = require('../classifier/UnitTypeClassifier')
+const UnitTypeUnitClassifier = require('../classifier/UnitTypeUnitClassifier')
 const PostcodeClassifier = require('../classifier/PostcodeClassifier')
 const StreetPrefixClassifier = require('../classifier/StreetPrefixClassifier')
 const StreetSuffixClassifier = require('../classifier/StreetSuffixClassifier')
@@ -20,6 +23,7 @@ const ChainClassifier = require('../classifier/ChainClassifier')
 const PlaceClassifier = require('../classifier/PlaceClassifier')
 const IntersectionClassifier = require('../classifier/IntersectionClassifier')
 // const MultiStreetClassifier = require('../classifier/MultiStreetClassifier')
+const CentralEuropeanStreetNameClassifier = require('../classifier/CentralEuropeanStreetNameClassifier')
 const CompositeClassifier = require('../classifier/CompositeClassifier')
 const WhosOnFirstClassifier = require('../classifier/WhosOnFirstClassifier')
 // const AdjacencyClassifier = require('../classifier/AdjacencyClassifier')
@@ -28,6 +32,7 @@ const LeadingAreaDeclassifier = require('../solver/LeadingAreaDeclassifier')
 const MultiStreetSolver = require('../solver/MultiStreetSolver')
 const InvalidSolutionFilter = require('../solver/InvalidSolutionFilter')
 const TokenDistanceFilter = require('../solver/TokenDistanceFilter')
+const OrphanedUnitTypeDeclassifier = require('../solver/OrphanedUnitTypeDeclassifier')
 const MustNotPreceedFilter = require('../solver/MustNotPreceedFilter')
 const MustNotFollowFilter = require('../solver/MustNotFollowFilter')
 const SubsetFilter = require('../solver/SubsetFilter')
@@ -40,10 +45,13 @@ class AddressParser extends Parser {
       [
         // generic word classifiers
         new AlphaNumericClassifier(),
+        new UnitTypeUnitClassifier(),
         new TokenPositionClassifier(),
 
         // word classifiers
+        new UnitTypeClassifier(),
         new HouseNumberClassifier(),
+        new UnitClassifier(),
         new PostcodeClassifier(),
         new StreetPrefixClassifier(),
         new StreetSuffixClassifier(),
@@ -69,8 +77,11 @@ class AddressParser extends Parser {
         new CompositeClassifier(require('../classifier/scheme/person')),
         new CompositeClassifier(require('../classifier/scheme/street_name')),
         new CompositeClassifier(require('../classifier/scheme/street')),
-        new CompositeClassifier(require('../classifier/scheme/place')),
-        new CompositeClassifier(require('../classifier/scheme/intersection'))
+        new CompositeClassifier(require('../classifier/scheme/venue')),
+        new CompositeClassifier(require('../classifier/scheme/intersection')),
+
+        // additional classifiers which act on unclassified tokens
+        new CentralEuropeanStreetNameClassifier()
       ],
       // solvers
       [
@@ -90,15 +101,15 @@ class AddressParser extends Parser {
           ['HouseNumberClassification', 'PostcodeClassification', 'LocalityClassification'],
           ['HouseNumberClassification', 'PostcodeClassification', 'RegionClassification'],
           ['HouseNumberClassification', 'PostcodeClassification', 'CountryClassification'],
-          ['PlaceClassification', 'HouseNumberClassification'],
-          ['PlaceClassification', 'PostcodeClassification']
+          ['VenueClassification', 'HouseNumberClassification'],
+          ['VenueClassification', 'PostcodeClassification']
         ]),
-        new MustNotFollowFilter('PlaceClassification', 'HouseNumberClassification'),
-        new MustNotFollowFilter('PlaceClassification', 'StreetClassification'),
-        new MustNotFollowFilter('PlaceClassification', 'LocalityClassification'),
-        new MustNotFollowFilter('PlaceClassification', 'RegionClassification'),
-        new MustNotFollowFilter('PlaceClassification', 'CountryClassification'),
-        new MustNotFollowFilter('PlaceClassification', 'PostcodeClassification'),
+        new MustNotFollowFilter('VenueClassification', 'HouseNumberClassification'),
+        new MustNotFollowFilter('VenueClassification', 'StreetClassification'),
+        new MustNotFollowFilter('VenueClassification', 'LocalityClassification'),
+        new MustNotFollowFilter('VenueClassification', 'RegionClassification'),
+        new MustNotFollowFilter('VenueClassification', 'CountryClassification'),
+        new MustNotFollowFilter('VenueClassification', 'PostcodeClassification'),
         new MustNotPreceedFilter('PostcodeClassification', 'HouseNumberClassification'),
         new MustNotPreceedFilter('PostcodeClassification', 'StreetClassification'),
         new MustNotPreceedFilter('LocalityClassification', 'HouseNumberClassification'),
@@ -110,10 +121,12 @@ class AddressParser extends Parser {
         new MustNotPreceedFilter('CountryClassification', 'PostcodeClassification'),
         new MustNotPreceedFilter('CountryClassification', 'StreetClassification'),
         new MustNotPreceedFilter('CountryClassification', 'HouseNumberClassification'),
+        new MustNotPreceedFilter('VenueClassification', 'UnitClassification'),
         new MustNotFollowFilter('LocalityClassification', 'RegionClassification'),
         new MustNotFollowFilter('LocalityClassification', 'CountryClassification'),
         new HouseNumberPositionPenalty(),
         new TokenDistanceFilter(),
+        new OrphanedUnitTypeDeclassifier(),
         new SubsetFilter()
       ],
       options
